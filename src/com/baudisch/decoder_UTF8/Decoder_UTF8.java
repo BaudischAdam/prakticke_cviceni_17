@@ -18,7 +18,6 @@ public class Decoder_UTF8 {
     private static final String[] ENCODINGS = {"IBM861", "Cp869", "Cp500", "IBM870", "IBM284"};
 
     public static void main(String[] args) {
-
         /// Vytvoření složky pro vložení souvoru dopis.bin
         try {
             vytvareniSlozky();
