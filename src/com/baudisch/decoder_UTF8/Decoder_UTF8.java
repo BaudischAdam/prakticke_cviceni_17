@@ -12,21 +12,25 @@ public class Decoder_UTF8 {
     /// zadané parametry
     private static final String OUTPUT_DIRECTORY = System.getProperty("user.home") + "/Java_Outputs";
     private static final String OUTPUT_FILE = OUTPUT_DIRECTORY + "/dopis_utf8.txt";
-    private static final String INPUT_FILE = "com/baudisch/inputs/dopis.bin";
+    private static final String BASE_DIRECTORY = System.getProperty("user.home") + "/Java_Inputs";
+    private static final String INPUT_FILE = BASE_DIRECTORY + "/dopis.bin";
     private static final String EXPECTED_HASH = "FADA5D5E2C76DED0D873D1AD987339A4A9DE57C77EC0AB740A386CFB866507BA";
     private static final String[] ENCODINGS = {"IBM861", "Cp869", "Cp500", "IBM870", "IBM284"};
 
     public static void main(String[] args) {
 
-        /// Hledání souboru - input stream zvolen protože dopis.bin je v JARU
-        try (InputStream inputStream = Decoder_UTF8.class.getClassLoader().getResourceAsStream(INPUT_FILE)) {
-            if (inputStream == null) {
-                System.err.println("Chyba! nebyl nalezen soubor: " + INPUT_FILE);
+        /// Vytvoření složky pro vložení souvoru dopis.bin
+        try {
+            vytvareniSlozky();
+
+            if (!Files.exists(Paths.get(INPUT_FILE))) {
+                System.out.println("Složka vytvořena: " + BASE_DIRECTORY);
+                System.out.println("Vložte dopis.bin do vytvořené složky a spusťte program znovu.");
                 return;
             }
 
             System.out.println("Soubor nalezen: " + INPUT_FILE);
-            byte[] data = inputStream.readAllBytes();
+            byte[] data = Files.readAllBytes(Paths.get(INPUT_FILE));
 
             /// kontrola SHA
             if (!kontrolaSHA256(data)) {
@@ -43,6 +47,22 @@ public class Decoder_UTF8 {
             }
         } catch (IOException e) {
             System.err.println("Chyba při čtení složky: " + e.getMessage());
+        }
+    }
+
+    /// Vytvarení složek
+    private static void vytvareniSlozky() throws IOException {
+        Path inputDir = Paths.get(BASE_DIRECTORY);
+        Path outputDir = Paths.get(OUTPUT_DIRECTORY);
+
+        if (!Files.exists(inputDir)) {
+            Files.createDirectories(inputDir);
+            System.out.println("Vytvořena složka pro vstupní soubor: " + BASE_DIRECTORY);
+        }
+
+        if (!Files.exists(outputDir)) {
+            Files.createDirectories(outputDir);
+            System.out.println("Vytvořena složka pro výstupní soubor: " + OUTPUT_DIRECTORY);
         }
     }
 
